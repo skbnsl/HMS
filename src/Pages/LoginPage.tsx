@@ -26,7 +26,7 @@ console.log(values);
 return (
     <div style={{background:'url("/bg.jpg")'}} className='h-screen w-screen !bg-cover !bg-center !bg-no-repeat 
       flex flex-col items-center justify-center'>
-          <div className="py-3 text-blue-500 flex gap-1 items-center">
+          <div className="py-3 text-pink-500 flex gap-1 items-center">
                 <IconHeartbeat size={45} stroke={2.5}/>
                 <span className="font-heading font-semibold text-4xl">Pulse</span>
             </div>
