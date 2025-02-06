@@ -36,8 +36,8 @@ return (
                       [&_.mantine-Input-input]:!border 
                      [&_input]:pl-2 [&_svg]:text-white [&_input]:!text-black'>
                               <div className='self-center font-medium font-heading text-white text-xl'>Login</div>
-                              <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email'/>
-                              <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password'/>
+                              <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email' autoComplete='off'/>
+                              <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password' autoComplete='off'/>
                               <Button radius='md' size='md' type='submit' color='blue' className=''>Login</Button>
                               <div className='text-neutral-100 text-sm self-center'>
                                 Don't have an account? 

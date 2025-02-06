@@ -3,6 +3,8 @@ import { IconHeartbeat } from '@tabler/icons-react'
 import { useForm } from '@mantine/form';
 import React from 'react'
 import { Link } from 'react-router-dom';
+import {registerUser}  from '../Service/UserService.tsx'
+import { errorNotification, successNotification } from '../Utility/NotificationUtil.tsx';
 
 
 const RegisterPage = () => {
@@ -29,8 +31,14 @@ const RegisterPage = () => {
                   });
 
 const handleSubmit = (values: typeof form.values) => {
-  debugger
-console.log(values);
+  console.log(values);
+  registerUser(values).then((data)=>{
+    successNotification("Registered Successfully!");
+    console.log("data:",data);
+  }).catch((error)=>{
+    console.error(error);
+    errorNotification(error.response.data.errorMessage);
+  })
 };
 
 return (
@@ -50,10 +58,10 @@ return (
                                   className='[&_*]:!text-white border border-white' 
                                   data={[{label:'Patient', value:'PATIENT'}, 
                                   {label:'Doctor', value:'Doctor'}, {label:'Admin', value:'ADMIN'},]} />
-                              <TextInput {...form.getInputProps('name')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Your Name'/>
-                              <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email'/>
-                              <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password'/>
-                              <PasswordInput {...form.getInputProps('confirmPassword')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Confirm Password'/>
+                              <TextInput {...form.getInputProps('name')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Your Name' autoComplete='off'/>
+                              <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email' autoComplete='off'/>
+                              <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password' autoComplete='off'/>
+                              <PasswordInput {...form.getInputProps('confirmPassword')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Confirm Password' autoComplete='off'/>
                               <Button radius='md' size='md' type='submit' color='pink' >Register</Button>
                               <div className='text-neutral-100 text-sm self-center'>
                                 Have an account? 

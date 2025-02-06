@@ -5,6 +5,9 @@ const axiosIntance = axios.create({
 })
 axiosIntance.interceptors.request.use(
     (config:InternalAxiosRequestConfig) => {
-        
+        console.log("Interceptor:",config);
+        return config;
     }
 )
+
+export default axiosIntance;
