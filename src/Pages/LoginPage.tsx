@@ -1,11 +1,15 @@
 import { Button, PasswordInput, TextInput } from '@mantine/core'
 import { IconHeartbeat } from '@tabler/icons-react'
 import { useForm } from '@mantine/form';
-import React from 'react'
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../Service/UserService.tsx';
+import { errorNotification, successNotification } from '../Utility/NotificationUtil.tsx';
 
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const [loading,setLoading] = useState(false);
           const form = useForm({
                     //mode: 'uncontrolled',
                     initialValues: {
@@ -20,7 +24,15 @@ const LoginPage = () => {
                   });
 
 const handleSubmit = (values: typeof form.values) => {
-console.log(values);
+  setLoading(true);
+  loginUser(values).then((_data)=>{
+    console.info("jwt::",_data);
+    successNotification("logged In Successfully");
+    navigate("/dashboard");
+  }).catch((error)=>{
+    errorNotification(error.response.data.errorMessage);
+  }).finally(()=>setLoading(false))
+
 };
 
 return (
@@ -38,7 +50,7 @@ return (
                               <div className='self-center font-medium font-heading text-white text-xl'>Login</div>
                               <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email' autoComplete='off'/>
                               <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password' autoComplete='off'/>
-                              <Button radius='md' size='md' type='submit' color='blue' className=''>Login</Button>
+                              <Button loading={loading} radius='md' size='md' type='submit' color='blue' className=''>Login</Button>
                               <div className='text-neutral-100 text-sm self-center'>
                                 Don't have an account? 
                                 <Link to="/register" className='hover:underline'>Register</Link>

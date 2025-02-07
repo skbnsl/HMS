@@ -1,13 +1,15 @@
 import { Button, PasswordInput, SegmentedControl, TextInput } from '@mantine/core'
 import { IconHeartbeat } from '@tabler/icons-react'
 import { useForm } from '@mantine/form';
-import React from 'react'
-import { Link } from 'react-router-dom';
+import React,{useState} from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import {registerUser}  from '../Service/UserService.tsx'
 import { errorNotification, successNotification } from '../Utility/NotificationUtil.tsx';
 
 
 const RegisterPage = () => {
+  const [loading,setLoading] = useState(false);
+  const navigate = useNavigate();
           const form = useForm({
                     //mode: 'uncontrolled',
                     initialValues: {
@@ -31,14 +33,16 @@ const RegisterPage = () => {
                   });
 
 const handleSubmit = (values: typeof form.values) => {
+  setLoading(true);
   console.log(values);
   registerUser(values).then((data)=>{
     successNotification("Registered Successfully!");
     console.log("data:",data);
+    navigate("/login");
   }).catch((error)=>{
     console.error(error);
     errorNotification(error.response.data.errorMessage);
-  })
+  }).finally(()=>setLoading(false))
 };
 
 return (
@@ -62,7 +66,7 @@ return (
                               <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email' autoComplete='off'/>
                               <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password' autoComplete='off'/>
                               <PasswordInput {...form.getInputProps('confirmPassword')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Confirm Password' autoComplete='off'/>
-                              <Button radius='md' size='md' type='submit' color='pink' >Register</Button>
+                              <Button loading={loading} radius='md' size='md' type='submit' color='pink' >Register</Button>
                               <div className='text-neutral-100 text-sm self-center'>
                                 Have an account? 
                                 <Link to="/login" className='hover:underline'>Login</Link>

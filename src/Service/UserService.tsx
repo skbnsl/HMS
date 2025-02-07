@@ -7,5 +7,11 @@ const registerUser = async (user:any) => {
             .catch((error:any)=>{throw error});
 }
 
+const loginUser = async (user:any) => {
+    return axiosIntance.post('/user/login', user)
+            .then((response:any)=>response.data)
+            .catch((error:any)=>{throw error});
+}
 
-export  {registerUser};
+
+export  {registerUser, loginUser};
