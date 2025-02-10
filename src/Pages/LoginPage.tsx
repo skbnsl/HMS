@@ -4,10 +4,14 @@ import { useForm } from '@mantine/form';
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../Service/UserService.tsx';
+import {jwtDecode} from 'jwt-decode';
 import { errorNotification, successNotification } from '../Utility/NotificationUtil.tsx';
+import { useDispatch } from 'react-redux';
+import { setJwt } from '../Slices/JwtSlice.tsx';
 
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading,setLoading] = useState(false);
           const form = useForm({
@@ -26,8 +30,10 @@ const LoginPage = () => {
 const handleSubmit = (values: typeof form.values) => {
   setLoading(true);
   loginUser(values).then((_data)=>{
+    console.log(jwtDecode(_data));
     console.info("jwt::",_data);
     successNotification("logged In Successfully");
+    dispatch(setJwt(_data));
     navigate("/dashboard");
   }).catch((error)=>{
     errorNotification(error.response.data.errorMessage);

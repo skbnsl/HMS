@@ -4,7 +4,9 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications';
 import { Button, createTheme, MantineProvider } from '@mantine/core';
 import AppRoutes from './Routes/AppRoutes.tsx';
+import {Provider} from 'react-redux';
 import { Notifications } from '@mantine/notifications';
+import Store from './Utility/Store.tsx';
 
 const theme = createTheme({
   /** Put your mantine theme override here */
@@ -21,10 +23,12 @@ const theme = createTheme({
 
 function App() {
   return (
+    <Provider store={Store}>
      <MantineProvider theme={theme}>
         <Notifications position='top-center'/>
       <AppRoutes/>
     </MantineProvider> 
+    </Provider>
   );
 }
 
