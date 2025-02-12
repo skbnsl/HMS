@@ -8,7 +8,7 @@ import {jwtDecode} from 'jwt-decode';
 import { errorNotification, successNotification } from '../Utility/NotificationUtil.tsx';
 import { useDispatch } from 'react-redux';
 import { setJwt } from '../Slices/JwtSlice.tsx';
-
+import { setUser } from '../Slices/UserSlice.tsx';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -34,6 +34,7 @@ const handleSubmit = (values: typeof form.values) => {
     console.info("jwt::",_data);
     successNotification("logged In Successfully");
     dispatch(setJwt(_data));
+    dispatch(setUser(jwtDecode(_data)));
     navigate("/dashboard");
   }).catch((error)=>{
     errorNotification(error.response.data.errorMessage);

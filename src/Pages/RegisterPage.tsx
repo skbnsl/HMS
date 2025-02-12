@@ -14,7 +14,7 @@ const RegisterPage = () => {
                     //mode: 'uncontrolled',
                     initialValues: {
                       name:'',
-                      type:'PATIENT',
+                      role:'PATIENT',
                       email: '',
                       password: '',
                       confirmPassword:''
