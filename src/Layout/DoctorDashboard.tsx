@@ -4,9 +4,9 @@ import Header from "../Components/Header/Header.tsx";
 import { Outlet, Route, Routes } from "react-router-dom";
 import Random from "../Components/Random";
 
-const AdminDashboard = () => {
+const DoctorDashboard = () => {
           return (
-                    <div className='flex'>
+                <div className='flex'>
                     <Sidebar/>
                     <div className='w-full flex flex-col'>
                     <Header/>
@@ -16,4 +16,4 @@ const AdminDashboard = () => {
           )
 }
 
-export default AdminDashboard;
+export default DoctorDashboard;

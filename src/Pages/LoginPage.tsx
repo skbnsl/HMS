@@ -35,7 +35,7 @@ const handleSubmit = (values: typeof form.values) => {
     successNotification("logged In Successfully");
     dispatch(setJwt(_data));
     dispatch(setUser(jwtDecode(_data)));  
-   // navigate("/dashboard");
+    navigate("/dashboard");
   }).catch((error)=>{
     errorNotification(error.response.data.errorMessage);
   }).finally(()=>setLoading(false))

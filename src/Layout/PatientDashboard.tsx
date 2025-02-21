@@ -1,10 +1,10 @@
 import React from "react";
-import Sidebar from "../Components/Doctor/Sidebar/Sidebar.tsx";
+import Sidebar from "../Components/Patient/Sidebar/Sidebar.tsx";
 import Header from "../Components/Header/Header.tsx";
 import { Outlet, Route, Routes } from "react-router-dom";
 import Random from "../Components/Random";
 
-const AdminDashboard = () => {
+const PatientDashboard = () => {
           return (
                     <div className='flex'>
                     <Sidebar/>
@@ -16,4 +16,4 @@ const AdminDashboard = () => {
           )
 }
 
-export default AdminDashboard;
+export default PatientDashboard;
