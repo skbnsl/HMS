@@ -9,6 +9,8 @@ import RegisterPage from '../Pages/RegisterPage.tsx';
 import PublicRoute from './PublicRoute.tsx';
 import ProtectedRoute from './ProtectedRoute.tsx';
 import PatientDashboard from '../Layout/PatientDashboard.tsx';
+import PatientProfilePage from '../Pages/Patient/PatientProfilePage.tsx';
+import Profile from '../Components/Patient/Profile/Profile.tsx';
 
 const AppRoutes = () => {
     return (
@@ -25,7 +27,7 @@ const AppRoutes = () => {
                 </Route>
                 <Route path='/patient' element={ <ProtectedRoute> <PatientDashboard/> </ProtectedRoute> }>
                     <Route path='dashboard' element={<Random/>} />
-                    <Route path='profile' element={<Random/>} />
+                    <Route path='profile' element={<Profile/>} />
                     <Route path='appointments' element={<Random/>} />
                 </Route>
             </Routes>
