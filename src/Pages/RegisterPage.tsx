@@ -58,10 +58,10 @@ return (
                       [&_.mantine-Input-input]:!border 
                      [&_input]:pl-2 [&_svg]:text-white [&_input]:!text-black'>
                               <div className='self-center font-medium font-heading text-white text-xl'>Register</div>
-                              <SegmentedControl {...form.getInputProps("type")} fullWidth size="md" radius="md" color='blue' bg='none'
+                              <SegmentedControl {...form.getInputProps("role")} fullWidth size="md" radius="md" color='blue' bg='none'
                                   className='[&_*]:!text-white border border-white' 
                                   data={[{label:'Patient', value:'PATIENT'}, 
-                                  {label:'Doctor', value:'Doctor'}, {label:'Admin', value:'ADMIN'},]} />
+                                  {label:'Doctor', value:'DOCTOR'}, {label:'Admin', value:'ADMIN'},]} />
                               <TextInput {...form.getInputProps('name')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Your Name' autoComplete='off'/>
                               <TextInput {...form.getInputProps('email')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='Email' autoComplete='off'/>
                               <PasswordInput {...form.getInputProps('password')} variant='unstyled' className='transition duration-300' size='md' radius='md' placeholder='password' autoComplete='off'/>
