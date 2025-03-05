@@ -1,10 +1,12 @@
-import { Avatar, Button, Divider, Modal, NumberInput, Select, Table, TagsInput, TextInput } from "@mantine/core";
+import { Avatar, Button, Divider, Modal, NumberInput, Select, Table, TagsInput, TextInput, useMantineSxTransform } from "@mantine/core";
 import {DateInput} from "@mantine/dates";
 import { IconEdit } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { bloodGroups } from "../../../Data/Dropdown.tsx";
 import { useDisclosure } from "@mantine/hooks";
+import { getPatient } from "../../../Service/PatientProfileService.tsx";
+import { formatDate } from "../../../Utility/DateUtility.tsx";
 
 const patient:any = {
     name:"John Doe",
@@ -23,6 +25,29 @@ const Profile = () => {
     const user = useSelector((state:any)=>state.user);
     const [opened, {open, close}] = useDisclosure(false);
     const [editMode, setEdit] = useState(false);
+    const [profile, setProfile] = useState<any>({});
+    useEffect(()=>{
+        getPatient(user.profileId).then((data)=>{
+            setProfile(data);
+        }).catch((error)=>{
+            console.error(error);
+        })
+    }, [])
+    const form = useForm({
+        initialValues:{
+            dob : profile.dob,
+            phone : profile.phone,
+            address : profile.address,
+            aadharNo : profile.aadharNo,
+            bloodGroup : profile.bloodGroup,
+            allergies : profile.allergies,
+            chronicDisease : profile.chronicDisease
+        },
+
+        validate : {
+            email : (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+        }
+    })
     return (
         <div className="p-10">
             <div className="flex justify-between items-center">
@@ -46,9 +71,9 @@ const Profile = () => {
                         <Table.Tbody className="{&>tr}:!mb-3">
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Date Of Birth</Table.Td>
-                                {editMode ?  <Table.Td className="text-xl"><DateInput placeholder="Date of birth"/>
+                                {editMode ?  <Table.Td className="text-xl"><DateInput {...form.getInputProps("dob")} placeholder="Date of birth"/>
                                     </Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.dob}</Table.Td>
+                                  : <Table.Td className="text-xl">{formatDate(profile.dob) ?? '-'}</Table.Td>
                                 }
                                 
                             </Table.Tr>
@@ -56,42 +81,42 @@ const Profile = () => {
                                 <Table.Td className="font-semibold text-xl">Phone</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
                                     <NumberInput placeholder="Phone Number" maxLength={10} clampBehavior="strict" hideControls/></Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.phone}</Table.Td>
+                                  : <Table.Td className="text-xl">{profile.phone ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Address</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
                                     <TextInput placeholder="Address"/></Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.address}</Table.Td>
+                                  : <Table.Td className="text-xl">{profile.address ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Aadhar No</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
                                     <NumberInput placeholder="Aadhar Number" maxLength={12} clampBehavior="strict" hideControls/></Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.aadharNo}</Table.Td>
+                                  : <Table.Td className="text-xl">{profile.aadharNo ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Blood Group</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
                                     <Select placeholder="Blood Group" data={bloodGroups}/></Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.bloodGroup}</Table.Td>
+                                  : <Table.Td className="text-xl">{profile.bloodGroup ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">allergies</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
                                     <TagsInput placeholder="Allegeries separated by comma"/> </Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.allergies}</Table.Td>
+                                  : <Table.Td className="text-xl">{profile.allergies ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Chronic Disease</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
                                     <TagsInput placeholder="Chronic Diseases separated by comma"/></Table.Td> 
-                                  : <Table.Td className="text-xl">{patient.chronicDisease}</Table.Td>
+                                  : <Table.Td className="text-xl">{profile.chronicDisease ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                         </Table.Tbody>
