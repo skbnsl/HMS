@@ -1,12 +1,14 @@
-import { Avatar, Button, Divider, Modal, NumberInput, Select, Table, TagsInput, TextInput, useMantineSxTransform } from "@mantine/core";
+import { Avatar, Button, Divider, Modal, NumberInput, Select, Table, TagsInput, TextInput } from "@mantine/core";
+import { useForm } from '@mantine/form';
 import {DateInput} from "@mantine/dates";
 import { IconEdit } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { bloodGroups } from "../../../Data/Dropdown.tsx";
 import { useDisclosure } from "@mantine/hooks";
-import { getPatient } from "../../../Service/PatientProfileService.tsx";
+import { getPatient, updatePatient } from "../../../Service/PatientProfileService.tsx";
 import { formatDate } from "../../../Utility/DateUtility.tsx";
+import { errorNotification, successNotification } from "../../../Utility/NotificationUtil.tsx";
 
 const patient:any = {
     name:"John Doe",
@@ -45,11 +47,32 @@ const Profile = () => {
         },
 
         validate : {
-            email : (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+            //email : (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+            dob : (value) => !value ? 'Date of birth is required' : undefined,
+            phone : (value) => !value ? 'phone number is required' : undefined,
+            address : (value) => !value ? 'address is required' : undefined,
+            aadharNo : (value) => !value ? 'Aadhar Number is required' : undefined,
         }
     })
+
+    const handleEdit = () => {
+        
+    }
+
+    const handleSubmit = (values:any) => {
+        console.log(values);
+        updatePatient({...profile,...values}).then((data)=>{
+            setProfile(data);
+            setEdit(false);
+            successNotification("Profile updated successfully");
+        }).catch((error)=>{
+            console.error(error);
+            errorNotification(error.response.data.errorMessage);
+        })
+    }
+
     return (
-        <div className="p-10">
+        <form onSubmit={form.onSubmit(handleSubmit)} className="p-10">
             <div className="flex justify-between items-center">
             <div className="flex gap-5 items-center" >
                 <div className="flex flex-col items-center gap-3">
@@ -61,8 +84,8 @@ const Profile = () => {
                     <div className="text-xl text-neutral-700">{user.email}</div>
                 </div>
             </div>
-            {!editMode ? <Button size="lg" onClick={()=>setEdit(true)} variant="filled" leftSection={<IconEdit/>}>Edit</Button>:
-            <Button size="lg" onClick={()=>setEdit(false)} variant="filled"> submit </Button>}
+            {!editMode ? <Button type="button" size="lg" onClick={/*()=>setEdit(true)*/ handleEdit} variant="filled" leftSection={<IconEdit/>}>Edit</Button>:
+            <Button size="lg" type="submit" /*onClick={()=>setEdit(false)}*/ variant="filled"> submit </Button>}
             </div>
             <Divider my={"xl"}/>
             <div>
@@ -80,42 +103,42 @@ const Profile = () => {
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Phone</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <NumberInput placeholder="Phone Number" maxLength={10} clampBehavior="strict" hideControls/></Table.Td> 
+                                    <NumberInput placeholder="Phone Number" {...form.getInputProps("phone")} maxLength={10} clampBehavior="strict" hideControls/></Table.Td> 
                                   : <Table.Td className="text-xl">{profile.phone ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Address</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <TextInput placeholder="Address"/></Table.Td> 
+                                    <TextInput {...form.getInputProps("address")} placeholder="Address"/></Table.Td>
                                   : <Table.Td className="text-xl">{profile.address ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Aadhar No</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <NumberInput placeholder="Aadhar Number" maxLength={12} clampBehavior="strict" hideControls/></Table.Td> 
+                                    <NumberInput {...form.getInputProps("aadharNo")} placeholder="Aadhar Number" maxLength={12} clampBehavior="strict" hideControls/></Table.Td> 
                                   : <Table.Td className="text-xl">{profile.aadharNo ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Blood Group</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <Select placeholder="Blood Group" data={bloodGroups}/></Table.Td> 
+                                    <Select {...form.getInputProps("bloodGroup")} placeholder="Blood Group" data={bloodGroups}/></Table.Td> 
                                   : <Table.Td className="text-xl">{profile.bloodGroup ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">allergies</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <TagsInput placeholder="Allegeries separated by comma"/> </Table.Td> 
+                                    <TagsInput {...form.getInputProps("allergies")} placeholder="Allegeries separated by comma"/> </Table.Td> 
                                   : <Table.Td className="text-xl">{profile.allergies ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Chronic Disease</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <TagsInput placeholder="Chronic Diseases separated by comma"/></Table.Td> 
+                                    <TagsInput {...form.getInputProps("chronicDisease")} placeholder="Chronic Diseases separated by comma"/></Table.Td> 
                                   : <Table.Td className="text-xl">{profile.chronicDisease ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
@@ -125,7 +148,7 @@ const Profile = () => {
             <Modal centered opened={opened} onClose={close} title={<span className="text-xl font-medium">Upload Profile Picture</span>}>
                 {}
             </Modal>
-        </div>
+        </form>
     )
 }
 
