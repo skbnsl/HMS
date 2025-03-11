@@ -5,7 +5,10 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { doctorSpecialization,doctorDepartments } from "../../../Data/Dropdown.tsx";
 import { useDisclosure } from "@mantine/hooks";
-import { getDoctor } from "../../../Service/DoctorProfileService.tsx";
+import { getDoctor, updateDoctor } from "../../../Service/DoctorProfileService.tsx";
+import { useForm } from "@mantine/form";
+import { formatDate } from "../../../Utility/DateUtility.tsx";
+import { errorNotification, successNotification } from "../../../Utility/NotificationUtil.tsx";
 
 const doctor:any = {
     name:"Dr. John Doe",
@@ -24,15 +27,54 @@ const Profile = () => {
     const user = useSelector((state:any)=>state.user);
     const [opened, {open, close}] = useDisclosure(false);
     const [editMode, setEdit] = useState(false);
-    const [profile, setProfile] = useState({});
+    const [profile, setProfile] = useState<any>({});
     useEffect(()=>{
         getDoctor(user.profileId).then((data)=>{
-            console.log(data);
-            setProfile(data);
+            setProfile({...data});
         }).catch((error)=>{
             console.error(error);
         })
     }, [])
+    const form = useForm({
+        initialValues:{
+            dob : '',
+            phone : '',
+            address : '',
+            licenseNo : '',
+            specialization : '',
+            department : '',
+            totalExp : ''
+        },
+
+        validate : {
+            //email : (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+            dob : (value) => !value ? 'Date of birth is required' : undefined,
+            phone : (value) => !value ? 'phone number is required' : undefined,
+            address : (value) => !value ? 'address is required' : undefined,
+            licenseNo : (value) => !value ? 'License Number is required' : undefined,
+        }
+    })
+
+    const handleEdit = () => {
+        form.setValues({...profile, dob:profile.dob ? new Date(profile.dob) : undefined});
+        setEdit(true);
+    }
+
+    const handleSubmit = (e:any) => {
+        let values = form.getValues();
+        form.validate();
+        if(!form.isValid()) return;
+        console.log(values);
+        updateDoctor({...profile,...values}).then((_data)=>{
+            setProfile({...profile, ...values});
+            setEdit(false);
+            successNotification("Profile updated successfully");
+        }).catch((error)=>{
+            console.error(error);
+            errorNotification(error.response.data.errorMessage);
+        })
+    }
+
     return (
         <div className="p-10">
             <div className="flex justify-between items-center">
@@ -53,55 +95,55 @@ const Profile = () => {
             <div>
                 <div className="text-2xl font-medium mb-5 text-neutral-900">Personal Information</div>
                     <Table striped stripedColor="primary.1" verticalSpacing="md" withRowBorders={false}>
-                        <Table.Tbody className="{&>tr}:!mb-3">
+                    <Table.Tbody className="{&>tr}:!mb-3 [&_td]:!w-1/2">
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Date Of Birth</Table.Td>
-                                {editMode ?  <Table.Td className="text-xl"><DateInput placeholder="Date of birth"/>
+                                {editMode ?  <Table.Td className="text-xl"><DateInput {...form.getInputProps("dob")} placeholder="Date of birth"/>
                                     </Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.dob}</Table.Td>
+                                  : <Table.Td className="text-xl">{formatDate(profile.dob) ?? '-'}</Table.Td>
                                 }
                                 
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Phone</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <NumberInput placeholder="Phone Number" maxLength={10} clampBehavior="strict" hideControls/></Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.phone}</Table.Td>
+                                    <NumberInput placeholder="Phone Number" {...form.getInputProps("phone")} maxLength={10} clampBehavior="strict" hideControls/></Table.Td> 
+                                  : <Table.Td className="text-xl">{profile.phone ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Address</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <TextInput placeholder="Address"/></Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.address}</Table.Td>
+                                    <TextInput {...form.getInputProps("address")} placeholder="Address"/></Table.Td>
+                                  : <Table.Td className="text-xl">{profile.address ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">License No.</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <NumberInput placeholder="Aadhar Number" maxLength={12} clampBehavior="strict" hideControls/></Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.licenseNo}</Table.Td>
+                                    <TextInput {...form.getInputProps("LicenseNo")} placeholder="License Number" maxLength={20}/></Table.Td> 
+                                  : <Table.Td className="text-xl">{profile.licenseNo ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Specialization</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <Select placeholder="Specialization" data={doctorSpecialization}/></Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.specialization}</Table.Td>
+                                    <Select {...form.getInputProps("specialization")} placeholder="Specialization" data={doctorSpecialization}/></Table.Td> 
+                                  : <Table.Td className="text-xl">{profile.specialization ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Department</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <Select placeholder="Department" data={doctorDepartments}/> </Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.department}</Table.Td>
+                                    <Select {...form.getInputProps("department")} placeholder="Department" data={doctorDepartments}/> </Table.Td> 
+                                  : <Table.Td className="text-xl">{profile.department ?? '-'}</Table.Td>
                                 }
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Td className="font-semibold text-xl">Total Experience</Table.Td>
                                 {editMode ?  <Table.Td className="text-xl">
-                                    <NumberInput maxLength={2} max={55} clampBehavior="strict" placeholder="Total Experience" hideControls/> </Table.Td> 
-                                  : <Table.Td className="text-xl">{doctor.totalExp} years</Table.Td>
+                                    <NumberInput {...form.getInputProps("totalExp")} maxLength={2} max={55} clampBehavior="strict" placeholder="Total Experience" hideControls/> </Table.Td> 
+                                  : <Table.Td className="text-xl">{profile.totalExp ?? '-'} {profile.totalExp ? 'years':''}</Table.Td>
                                 }
                             </Table.Tr>
                         </Table.Tbody>
